@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#ffb8d9">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>くまぷよ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <h1 class="app-title"><span class="title-deco" aria-hidden="true">🎀</span> くまぷよ <span class="title-deco" aria-hidden="true">🐻</span></h1>
+
+    <!-- 画面遷移用メニュー -->
+    <nav class="app-nav" aria-label="メインメニュー">
+      <button type="button" class="nav-btn" data-screen="register">新規登録</button>
+      <button type="button" class="nav-btn" data-screen="login">ログイン</button>
+      <button type="button" class="nav-btn is-active" data-screen="play">プレイ</button>
+      <button type="button" class="nav-btn" data-screen="ranking">ランキング</button>
+    </nav>
+
+    <p id="authMessage" class="auth-message" role="status"></p>
+
+    <!-- ① 新規登録だけ -->
+    <section id="screen-register" class="screen" aria-label="新規登録">
+      <div class="auth-box auth-box-single">
+        <h2>新規登録</h2>
+        <input id="registerUserId" type="text" placeholder="ユーザーID（3文字以上）" autocomplete="username">
+        <input id="registerPassword" type="password" placeholder="パスワード（4文字以上）" autocomplete="new-password">
+        <button type="button" id="registerBtn">登録</button>
+      </div>
+    </section>
+
+    <!-- ② ログイン・ログアウト -->
+    <section id="screen-login" class="screen" aria-label="ログイン">
+      <div class="auth-row">
+        <div class="auth-box">
+          <h2>ログイン</h2>
+          <input id="loginUserId" type="text" placeholder="ユーザーID" autocomplete="username">
+          <input id="loginPassword" type="password" placeholder="パスワード" autocomplete="current-password">
+          <button type="button" id="loginBtn">ログイン</button>
+        </div>
+        <div class="auth-box">
+          <h2>ログイン状態</h2>
+          <p id="currentUserText">未ログイン</p>
+          <button type="button" id="logoutBtn">ログアウト</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ③ プレイ画面 -->
+    <section id="screen-play" class="screen screen-play is-active" aria-label="ゲーム">
+      <div class="game-area">
+        <section class="game-info" aria-label="スコアと操作">
+          <div class="cute-stats">
+            <div class="stat-card stat-card--score">
+              <span class="stat-card__icon" aria-hidden="true">⭐</span>
+              <div class="stat-card__body">
+                <span class="stat-card__label">スコア</span>
+                <span class="stat-card__value" id="score">0</span>
+              </div>
+            </div>
+            <div class="stat-card stat-card--chain">
+              <span class="stat-card__icon" aria-hidden="true">💫</span>
+              <div class="stat-card__body">
+                <span class="stat-card__label">直前の連鎖</span>
+                <span class="stat-card__value" id="chain">0</span>
+              </div>
+            </div>
+            <div class="stat-card stat-card--maxchain">
+              <span class="stat-card__icon" aria-hidden="true">👑</span>
+              <div class="stat-card__body">
+                <span class="stat-card__label">最高連鎖</span>
+                <span class="stat-card__value" id="maxChain">0</span>
+              </div>
+            </div>
+          </div>
+          <p class="play-hint">
+            💕 ランキングにのせたいときは「ログイン」してからあそんでね<br />
+            <span class="play-hint-sub">くまは 2 匹つながって落ちてきます（色はランダム）。右上に<strong>次の組</strong>の予告が出ます。<strong>↑</strong> キーまたは「↻ 回転」で向きを変えられます。固定後、足場のない方は下まで落ちます。盤面の<strong>一番上のピンクの行</strong>がデッドラインです。<strong>1 分くらい経つと</strong>落下がどんどん速くなるよ。スマホは下のボタンでも操作できるよ</span>
+          </p>
+          <div class="play-actions">
+            <button type="button" id="startBtn" class="btn-start-cute">♪ ゲームスタート ♪</button>
+            <button type="button" id="rotateBtn" class="btn-rotate-cute" aria-label="くまの向きを時計回りに回転">↻ 回転</button>
+          </div>
+        </section>
+        <div class="game-canvas-column">
+          <section class="game-section game-section--framed">
+            <div class="game-frame" aria-hidden="true"></div>
+            <div class="game-canvas-wrap">
+              <div id="nextPiecePanel" class="next-piece-panel" aria-label="次に落ちてくる組">
+                <span class="next-piece-label">つぎ</span>
+                <canvas id="nextPreviewCanvas" width="56" height="84" class="next-preview-canvas" aria-hidden="true"></canvas>
+              </div>
+              <canvas id="gameCanvas" width="300" height="600" class="game-canvas"></canvas>
+              <div id="chainFxLayer" class="chain-fx-layer" aria-hidden="true"></div>
+            </div>
+          </section>
+          <!-- スマホ向け：キーボードの代わりにタッチ操作 -->
+          <div
+            class="touch-controls"
+            id="touchControls"
+            role="group"
+            aria-label="スマホ・タブレット用の移動ボタン"
+          >
+            <button
+              type="button"
+              class="touch-btn touch-btn-left"
+              data-touch-dir="left"
+              aria-label="左へ移動"
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              class="touch-btn touch-btn-rotate"
+              data-touch-action="rotate"
+              aria-label="向きを回転"
+            >
+              ↻
+            </button>
+            <button
+              type="button"
+              class="touch-btn touch-btn-down"
+              data-touch-dir="down"
+              aria-label="すばやく落下"
+            >
+              ↓
+            </button>
+            <button
+              type="button"
+              class="touch-btn touch-btn-right"
+              data-touch-dir="right"
+              aria-label="右へ移動"
+            >
+              →
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ④ ランキングだけ -->
+    <section id="screen-ranking" class="screen" aria-label="ランキング">
+      <div class="ranking-panel">
+        <div class="ranking-header">
+          <h2>🏆 ランキング</h2>
+          <button type="button" id="refreshRankingBtn" class="btn-secondary">再読み込み</button>
+        </div>
+        <ol id="rankingList">
+          <li>メニューから開くと読み込みます</li>
+        </ol>
+      </div>
+    </section>
+  </div>
+
+  <script src="api.js"></script>
+  <script src="auth.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

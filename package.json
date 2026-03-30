@@ -1,0 +1,9 @@
+{
+  "name": "bear-puzzle-game",
+  "private": true,
+  "description": "くまぷよ（静的HTMLゲーム）",
+  "scripts": {
+    "start": "npx --yes serve . -l 3000",
+    "serve": "npx --yes serve . -l 3000"
+  }
+}
