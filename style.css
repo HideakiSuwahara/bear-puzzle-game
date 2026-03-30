@@ -367,8 +367,8 @@ button:active {
   font-size: clamp(0.52rem, 2.1vw, 0.62rem);
   font-weight: 700;
   color: #5a6a62;
-  justify-content: space-between;
-  gap: 6px;
+  justify-content: flex-start;
+  gap: 4px;
   padding-right: 1px;
 }
 
@@ -378,11 +378,6 @@ button:active {
 
 .canvas-hud__line--chain #chain {
   color: #1f8a65;
-  font-weight: 800;
-}
-
-.canvas-hud__line--chain #maxChain {
-  color: #9a7200;
   font-weight: 800;
 }
 
@@ -521,7 +516,7 @@ button:active {
 .game-canvas-wrap {
   position: relative;
   width: 100%;
-  max-width: min(100vw - 40px, 300px);
+  max-width: min(100vw - 32px, 340px);
   margin: 0 auto;
   line-height: 0;
 }
@@ -820,14 +815,14 @@ button:active {
   }
 
   .game-canvas-wrap {
-    max-width: min(calc(100vw - 20px), 300px);
+    max-width: min(calc(100vw - 24px), 340px);
   }
 
+  /* 高さで縮めない（1画面収め用の max-height はやめ、幅×アスペクト比で大きく表示） */
   .game-canvas,
   #gameCanvas {
-    max-width: min(calc(100vw - 48px), 300px);
-    max-height: min(calc(100dvh - 248px), calc((100vw - 20px) * 2));
-    width: auto;
+    max-width: min(calc(100vw - 32px), 340px);
+    width: 100%;
     height: auto;
   }
 
@@ -956,12 +951,12 @@ button:active {
   .game-canvas-column {
     flex: 0 1 auto;
     order: 1;
-    max-width: min(42vw, 220px);
+    max-width: min(48vw, 280px);
   }
 
   .game-canvas,
   #gameCanvas {
-    max-width: min(42vw, 220px);
+    max-width: min(48vw, 280px);
   }
 
   .touch-controls {

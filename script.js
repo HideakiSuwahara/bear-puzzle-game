@@ -150,7 +150,6 @@
     document.getElementById("score") || document.getElementById("scoreDisplay");
   const chainDisplay =
     document.getElementById("chain") || document.getElementById("chainDisplay");
-  const maxChainDisplay = document.getElementById("maxChain");
   const gameOverOverlay = document.getElementById("gameOverOverlay");
   // 再開ボタンが無いページでは「ゲームスタート」でリセット
   const restartBtn =
@@ -191,9 +190,6 @@
    * 消えなかった場合は 0。
    */
   let lastChainCount = 0;
-
-  /** このゲーム中に達した連鎖数の最大（ゲームスタートでリセット） */
-  let maxChainRecord = 0;
 
   /** ゲームオーバーなら true */
   let gameOver = false;
@@ -614,9 +610,6 @@
       await playSurpriseThenClearCells(cells, chain);
     }
     lastChainCount = chain;
-    if (chain > 0) {
-      maxChainRecord = Math.max(maxChainRecord, chain);
-    }
     updateHud();
   }
 
@@ -1174,10 +1167,8 @@
   function updateHud() {
     const s = String(score);
     const c = String(lastChainCount);
-    const m = String(maxChainRecord);
     if (scoreDisplay) scoreDisplay.textContent = s;
     if (chainDisplay) chainDisplay.textContent = c;
-    if (maxChainDisplay) maxChainDisplay.textContent = m;
   }
 
   function triggerGameOver() {
@@ -1204,7 +1195,6 @@
     clearAnimSnapshots = null;
     score = 0;
     lastChainCount = 0;
-    maxChainRecord = 0;
     gameOver = false;
     dropAccumulator = 0;
     gameSpeedEpochStart = performance.now();
