@@ -650,65 +650,18 @@ button:active {
   box-sizing: border-box;
 }
 
-/* スマホ・狭い画面：タッチ用 ←↓→（PCでは非表示） */
-.touch-controls {
-  display: none;
+/* 盤面上：フリック・タップ用（透明） */
+.touch-gesture-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
   width: 100%;
-  max-width: min(calc(100vw - 24px), 360px);
-  justify-content: stretch;
-  align-items: stretch;
-  gap: clamp(6px, 2vw, 10px);
-  padding: 8px 0 4px;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-}
-
-.touch-btn {
-  flex: 1;
-  min-width: 0;
-  min-height: max(48px, 12vw);
-  padding: 12px 6px;
-  font-size: clamp(1.25rem, 5.5vw, 1.5rem);
-  font-weight: 800;
-  line-height: 1;
-  font-family: inherit;
-  border-radius: 16px;
-  border: 3px solid #fff;
-  background: linear-gradient(180deg, #e8f8ff 0%, #c5e8ff 100%);
-  color: #4a6a8a;
-  box-shadow: 0 5px 0 rgba(120, 160, 200, 0.45);
-  cursor: pointer;
-  transition: transform 0.08s, filter 0.15s;
-}
-
-.touch-btn:active,
-.touch-btn.is-pressed {
-  transform: translateY(3px);
-  box-shadow: 0 2px 0 rgba(120, 160, 200, 0.45);
-  filter: brightness(0.97);
-}
-
-.touch-btn-down {
-  background: linear-gradient(180deg, #ffe8f0 0%, #ffb8d4 100%);
-  color: #a03868;
-  box-shadow: 0 5px 0 rgba(220, 120, 160, 0.45);
-}
-
-.touch-btn-down:active,
-.touch-btn-down.is-pressed {
-  box-shadow: 0 2px 0 rgba(220, 120, 160, 0.45);
-}
-
-.touch-btn-rotate {
-  background: linear-gradient(180deg, #e8fff4 0%, #b8e8d4 100%);
-  color: #2a6a52;
-  box-shadow: 0 5px 0 rgba(80, 160, 130, 0.4);
-}
-
-.touch-btn-rotate:active,
-.touch-btn-rotate.is-pressed {
-  box-shadow: 0 2px 0 rgba(80, 160, 130, 0.4);
+  height: 100%;
+  z-index: 8;
+  touch-action: none;
+  border-radius: clamp(12px, 3vw, 18px);
+  box-sizing: border-box;
+  cursor: grab;
 }
 
 /* ランキング */
@@ -791,19 +744,6 @@ button:active {
     font-size: 0.82rem;
   }
 
-  .touch-controls {
-    display: flex;
-    padding: 4px 0 2px;
-    gap: 6px;
-  }
-
-  .touch-btn {
-    min-height: 44px;
-    padding: 8px 4px;
-    font-size: clamp(1.1rem, 4.5vw, 1.35rem);
-    border-radius: 12px;
-  }
-
   .screen-play {
     padding: 10px 12px;
   }
@@ -868,13 +808,6 @@ button:active {
     min-height: 48px;
     font-size: 0.82rem;
     padding-inline: 8px;
-  }
-}
-
-/* タッチデバイス（マウスが主でない）でもボタンを出す */
-@media (hover: none) and (pointer: coarse) {
-  .touch-controls {
-    display: flex;
   }
 }
 
@@ -959,10 +892,4 @@ button:active {
     max-width: min(48vw, 280px);
   }
 
-  .touch-controls {
-    display: flex;
-    flex: 1 1 100%;
-    order: 2;
-    max-width: 100%;
-  }
 }

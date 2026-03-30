@@ -1303,100 +1303,84 @@
   });
 
   // ---------------------------------------------------------------------------
-  // スマホ・タブレット：画面の ←↓→ ボタン（pointer イベント）
+  // スマホ・タブレット：盤面上で左右フリック＝横移動、短いタップ＝回転
   // ---------------------------------------------------------------------------
 
-  function bindTouchDirectionButton(btn) {
-    const dir = btn.getAttribute("data-touch-dir");
-    if (!dir) {
+  const touchGestureLayer = document.getElementById("touchGestureLayer");
+
+  function setupTouchGestures(layerEl) {
+    if (!layerEl) {
       return;
     }
+    const SWIPE_MIN_PX = 36;
+    const TAP_SLOP_PX = 22;
+    const TAP_MAX_MS = 350;
+    const STEP_PX = 48;
 
-    const onDown = (e) => {
-      e.preventDefault();
+    let activePointerId = null;
+    let startX = 0;
+    let startY = 0;
+    let startT = 0;
+
+    layerEl.addEventListener(
+      "pointerdown",
+      (e) => {
+        if (gameOver || activePointerId !== null) {
+          return;
+        }
+        if (e.pointerType === "mouse" && e.button !== 0) {
+          return;
+        }
+        activePointerId = e.pointerId;
+        startX = e.clientX;
+        startY = e.clientY;
+        startT = performance.now();
+        try {
+          layerEl.setPointerCapture(e.pointerId);
+        } catch {
+          /* ignore */
+        }
+        e.preventDefault();
+      },
+      { passive: false }
+    );
+
+    const onPointerEnd = (e) => {
+      if (activePointerId === null || e.pointerId !== activePointerId) {
+        return;
+      }
+      activePointerId = null;
+      try {
+        layerEl.releasePointerCapture(e.pointerId);
+      } catch {
+        /* ignore */
+      }
       if (gameOver) {
         return;
       }
-      try {
-        btn.setPointerCapture(e.pointerId);
-      } catch {
-        /* ignore */
-      }
-      btn.classList.add("is-pressed");
-      if (dir === "left" && !keys.left) {
-        keys.left = true;
-        startLateralRepeat(-1);
-      } else if (dir === "right" && !keys.right) {
-        keys.right = true;
-        startLateralRepeat(1);
-      } else if (dir === "down") {
-        keys.down = true;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      const dt = performance.now() - startT;
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+
+      if (absX >= SWIPE_MIN_PX && absX > absY * 1.15) {
+        const dir = dx > 0 ? 1 : -1;
+        const steps = Math.min(8, Math.max(1, Math.floor(absX / STEP_PX)));
+        for (let i = 0; i < steps; i++) {
+          tryMoveHorizontal(dir);
+        }
+      } else if (absX <= TAP_SLOP_PX && absY <= TAP_SLOP_PX && dt <= TAP_MAX_MS) {
+        tryRotateClockwise();
       }
     };
 
-    const onUp = (e) => {
-      e.preventDefault();
-      btn.classList.remove("is-pressed");
-      try {
-        btn.releasePointerCapture(e.pointerId);
-      } catch {
-        /* ignore */
-      }
-      if (dir === "left") {
-        keys.left = false;
-        stopLateralRepeat();
-        if (keys.right) {
-          startLateralRepeat(1);
-        }
-      } else if (dir === "right") {
-        keys.right = false;
-        stopLateralRepeat();
-        if (keys.left) {
-          startLateralRepeat(-1);
-        }
-      } else if (dir === "down") {
-        keys.down = false;
-      }
-    };
-
-    btn.addEventListener("pointerdown", onDown, { passive: false });
-    btn.addEventListener("pointerup", onUp);
-    btn.addEventListener("pointercancel", onUp);
-    if (dir === "left" || dir === "right") {
-      btn.addEventListener("pointerleave", onUp);
-    }
+    layerEl.addEventListener("pointerup", onPointerEnd);
+    layerEl.addEventListener("pointercancel", onPointerEnd);
+    layerEl.addEventListener("click", (e) => e.preventDefault(), true);
   }
 
-  document.querySelectorAll("[data-touch-dir]").forEach(bindTouchDirectionButton);
-
-  document.querySelectorAll("[data-touch-action='rotate']").forEach((btn) => {
-    const onDown = (e) => {
-      e.preventDefault();
-      if (gameOver) {
-        return;
-      }
-      try {
-        btn.setPointerCapture(e.pointerId);
-      } catch {
-        /* ignore */
-      }
-      btn.classList.add("is-pressed");
-      tryRotateClockwise();
-    };
-    const onUp = (e) => {
-      e.preventDefault();
-      btn.classList.remove("is-pressed");
-      try {
-        btn.releasePointerCapture(e.pointerId);
-      } catch {
-        /* ignore */
-      }
-    };
-    btn.addEventListener("pointerdown", onDown, { passive: false });
-    btn.addEventListener("pointerup", onUp);
-    btn.addEventListener("pointercancel", onUp);
-    btn.addEventListener("pointerleave", onUp);
-  });
+  setupTouchGestures(touchGestureLayer);
 
   const rotateBtn = document.getElementById("rotateBtn");
   if (rotateBtn) {
