@@ -39,10 +39,14 @@ npm start
    git push -u origin main
    ```
 
-4. GitHub のリポジトリで **Settings → Pages** を開き、**Build and deployment** の Source を **Deploy from a branch** にし、Branch は **`main`**、フォルダは **`/ (root)`** を選んで Save。  
-5. 1〜3 分後に **`https://<ユーザー名>.github.io/<リポジトリ名>/`** で公開される（初回は GitHub から表示される URL を確認）。
+4. **Pages を有効にする（ここを忘れると 404 になります）**  
+   - リポジトリ **Settings → Pages** を開く。  
+   - **Build and deployment** の **Source** を **GitHub Actions** にする（推奨。リポジトリに `.github/workflows/pages.yml` があると `main` へ push するたびにデプロイされます）。  
+   - または Source を **Deploy from a branch** にし、Branch **`main`**、フォルダ **`/ (root)`** を選んで Save。  
+5. **Actions** タブでワークフロー「Deploy GitHub Pages」が緑のチェックになるまで待つ（初回 1〜2 分程度）。  
+6. 開く URL は **プロジェクト用** の **`https://<ユーザー名>.github.io/<リポジトリ名>/`**（末尾の **`/<リポジトリ名>/`** を付ける。`https://<ユーザー名>.github.io/` だけだと別サイト扱いで 404 になります）。
 
-**注意:** プロジェクトサイト（`/リポジトリ名/` 付き）でも、このプロジェクトは相対パスの CSS/JS なので追加設定は不要です。
+**注意:** プロジェクトサイトでも相対パスの CSS/JS のまま動きます。
 
 ### D. Cloudflare Pages
 
