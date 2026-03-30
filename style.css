@@ -443,45 +443,6 @@ button:active {
   box-shadow: 0 2px 0 #c43d6d;
 }
 
-.play-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  justify-content: center;
-  margin-top: 4px;
-}
-
-.play-actions .btn-start-cute {
-  margin-top: 0;
-  flex: 1 1 200px;
-  max-width: 280px;
-}
-
-.btn-rotate-cute {
-  flex: 0 0 auto;
-  padding: 12px 20px;
-  font-size: 0.95rem;
-  font-weight: 800;
-  font-family: inherit;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #d8f4e8 0%, #a8e8d4 45%, #7dd3b8 100%);
-  border: 3px solid #fff;
-  color: #2a6a52;
-  box-shadow: 0 5px 0 rgba(60, 140, 110, 0.45), 0 4px 12px rgba(100, 180, 140, 0.2);
-  cursor: pointer;
-  transition: transform 0.08s, filter 0.15s;
-}
-
-.btn-rotate-cute:hover {
-  filter: brightness(1.05);
-}
-
-.btn-rotate-cute:active {
-  transform: translateY(3px);
-  box-shadow: 0 2px 0 rgba(60, 140, 110, 0.45);
-}
-
 /* ---------- キャンバス枠（リボン風・ふわ枠） ---------- */
 .game-section--framed {
   position: relative;
@@ -501,6 +462,73 @@ button:active {
   border: 3px dashed rgba(255, 158, 199, 0.55);
   pointer-events: none;
   z-index: 0;
+}
+
+/* プレイ枠の中央：スタートボタン → メッセージ → ゲーム開始 */
+.play-start-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--radius-xl);
+  background: rgba(255, 248, 252, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.play-start-overlay--hidden {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+.btn-start-cute--overlay {
+  width: auto;
+  max-width: min(92%, 280px);
+  margin-top: 0;
+}
+
+.game-start-flash {
+  margin: 0;
+  padding: 0 12px;
+  font-size: clamp(1.35rem, 6.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--pink-deep);
+  text-align: center;
+  text-shadow:
+    0 0 14px rgba(255, 255, 255, 0.95),
+    2px 2px 0 #fff;
+  pointer-events: none;
+}
+
+.game-start-flash--animate {
+  animation: game-start-flash-pop 0.88s ease-out forwards;
+}
+
+@keyframes game-start-flash-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.02);
+  }
 }
 
 /* キャンバス列（PCは横並び、狭い画面は縦） */
@@ -724,24 +752,6 @@ button:active {
     width: 100%;
     align-items: center;
     gap: 6px;
-  }
-
-  .play-actions {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    width: 100%;
-    gap: 8px;
-    margin-top: 0;
-  }
-
-  .play-actions .btn-start-cute,
-  .play-actions .btn-rotate-cute {
-    flex: 1;
-    min-width: 0;
-    max-width: none;
-    width: auto;
-    padding: 10px 10px;
-    font-size: 0.82rem;
   }
 
   .screen-play {

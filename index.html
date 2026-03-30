@@ -83,13 +83,9 @@
               <summary class="play-hint-summary">遊び方・ヒント（タップで開く）</summary>
               <p class="play-hint">
                 💕 ランキングにのせたいときは「アカウント」からログインしてからあそんでね<br />
-                <span class="play-hint-sub">くまは 2 匹つながって落ちてきます（色はランダム）。左上に<strong>スコア・連鎖</strong>、右上に<strong>次の組</strong>。PC は<strong>矢印キー</strong>と<strong>↑</strong>で移動・回転。スマホは<strong>盤面を左右にフリック</strong>で横移動、<strong>タップ</strong>で回転。固定後、足場のない方は下まで落ちます。盤面の<strong>薄ピンクの 2 行</strong>がデッドラインです。<strong>1 分くらい経つと</strong>落下が速くなるよ。</span>
+                <span class="play-hint-sub">くまは 2 匹つながって落ちてきます（色はランダム）。左上に<strong>スコア・連鎖</strong>、右上に<strong>次の組</strong>。PC は<strong>矢印キー</strong>と<strong>↑</strong>で移動・回転。スマホは盤面の<strong>左右フリック</strong>で横移動、<strong>下フリック</strong>で速く落下、<strong>タップ</strong>で回転。中央の<strong>ゲームスタート</strong>から開始。固定後、足場のない方は下まで落ちます。盤面の<strong>薄ピンクの 2 行</strong>がデッドラインです。</span>
               </p>
             </details>
-            <div class="play-actions">
-              <button type="button" id="startBtn" class="btn-start-cute">♪ ゲームスタート ♪</button>
-              <button type="button" id="rotateBtn" class="btn-rotate-cute" aria-label="くまの向きを時計回りに回転">↻ 回転</button>
-            </div>
           </section>
           <div class="game-canvas-column">
             <section class="game-section game-section--framed">
@@ -116,6 +112,12 @@
                   role="presentation"
                   aria-hidden="true"
                 ></div>
+              </div>
+              <div id="playStartOverlay" class="play-start-overlay" aria-hidden="false">
+                <button type="button" id="startBtn" class="btn-start-cute btn-start-cute--overlay">
+                  ♪ ゲームスタート ♪
+                </button>
+                <p id="gameStartFlash" class="game-start-flash" hidden>ゲームスタート</p>
               </div>
             </section>
           </div>

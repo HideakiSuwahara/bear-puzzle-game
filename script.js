@@ -194,6 +194,14 @@
   /** ゲームオーバーなら true */
   let gameOver = false;
 
+  /** スタートボタン押下前・ゲームオーバー直後など、まだ操作を受け付けない待機 */
+  let waitingForStart = true;
+
+  /** 「ゲームスタート」表示中は二重押し防止 */
+  let introRunning = false;
+
+  const INTRO_FLASH_MS = 900;
+
   /**
    * 消去アニメ中に「驚き顔」を描くマス（board はまだ消してない）
    * @type {{ row: number, col: number, color: number }[] | null}
@@ -608,9 +616,13 @@
         showChainComboPopup(chain, cells);
       }
       await playSurpriseThenClearCells(cells, chain);
+      lastChainCount = chain;
+      updateHud();
     }
-    lastChainCount = chain;
-    updateHud();
+    if (chain === 0) {
+      lastChainCount = 0;
+      updateHud();
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -1171,10 +1183,91 @@
     if (chainDisplay) chainDisplay.textContent = c;
   }
 
+  function showPlayStartOverlay() {
+    const ov = document.getElementById("playStartOverlay");
+    const btn = document.getElementById("startBtn");
+    const flash = document.getElementById("gameStartFlash");
+    if (ov) {
+      ov.classList.remove("play-start-overlay--hidden");
+      ov.setAttribute("aria-hidden", "false");
+    }
+    if (btn) {
+      btn.hidden = false;
+    }
+    if (flash) {
+      flash.hidden = true;
+      flash.classList.remove("game-start-flash--animate");
+    }
+  }
+
+  function hidePlayStartOverlayCompletely() {
+    const ov = document.getElementById("playStartOverlay");
+    if (ov) {
+      ov.classList.add("play-start-overlay--hidden");
+      ov.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  function playIntroThenStart() {
+    if (introRunning) {
+      return;
+    }
+    introRunning = true;
+    keys.left = false;
+    keys.right = false;
+    keys.down = false;
+    stopLateralRepeat();
+    const btn = document.getElementById("startBtn");
+    const flash = document.getElementById("gameStartFlash");
+    if (btn) {
+      btn.hidden = true;
+    }
+
+    if (gameOver) {
+      board = createEmptyBoard();
+      activePiece = null;
+      nextPair = { colorA: randomColor(), colorB: randomColor() };
+      clearAnimSnapshots = null;
+      score = 0;
+      lastChainCount = 0;
+      gameOver = false;
+      const fxLayerGo = document.getElementById("chainFxLayer");
+      if (fxLayerGo) {
+        fxLayerGo.innerHTML = "";
+      }
+      if (gameOverOverlay) {
+        gameOverOverlay.classList.add("hidden");
+      }
+      updateHud();
+    }
+
+    if (flash) {
+      flash.hidden = false;
+      flash.classList.remove("game-start-flash--animate");
+      void flash.offsetWidth;
+      flash.classList.add("game-start-flash--animate");
+    }
+
+    window.setTimeout(() => {
+      if (flash) {
+        flash.hidden = true;
+        flash.classList.remove("game-start-flash--animate");
+      }
+      hidePlayStartOverlayCompletely();
+      waitingForStart = false;
+      introRunning = false;
+      gameSpeedEpochStart = performance.now();
+      dropAccumulator = 0;
+      trySpawnNextPiece();
+    }, INTRO_FLASH_MS);
+  }
+
   function triggerGameOver() {
     const finalScore = score;
     gameOver = true;
     activePiece = null;
+    waitingForStart = true;
+    showPlayStartOverlay();
     if (gameOverOverlay) {
       gameOverOverlay.classList.remove("hidden");
     } else if (typeof showAuthMessage === "function") {
@@ -1182,7 +1275,6 @@
     } else {
       window.alert("ゲームオーバー");
     }
-    // ログイン済みなら Apps Script へスコア送信 → ランキング更新（auth.js）
     if (typeof window.submitScoreAfterGameOver === "function") {
       window.submitScoreAfterGameOver(finalScore);
     }
@@ -1196,15 +1288,19 @@
     score = 0;
     lastChainCount = 0;
     gameOver = false;
+    waitingForStart = true;
+    introRunning = false;
     dropAccumulator = 0;
     gameSpeedEpochStart = performance.now();
     const fxLayer = document.getElementById("chainFxLayer");
     if (fxLayer) {
       fxLayer.innerHTML = "";
     }
-    if (gameOverOverlay) gameOverOverlay.classList.add("hidden");
+    if (gameOverOverlay) {
+      gameOverOverlay.classList.add("hidden");
+    }
     updateHud();
-    trySpawnNextPiece();
+    showPlayStartOverlay();
   }
 
   // ---------------------------------------------------------------------------
@@ -1215,7 +1311,7 @@
     const dt = now - lastFrameTime;
     lastFrameTime = now;
 
-    if (!gameOver && activePiece) {
+    if (!gameOver && !waitingForStart && activePiece) {
       const interval = getGravityDropIntervalMs();
       dropAccumulator += dt;
       while (dropAccumulator >= interval) {
@@ -1259,7 +1355,7 @@
   }
 
   window.addEventListener("keydown", (e) => {
-    if (gameOver) {
+    if (gameOver || waitingForStart || introRunning) {
       return;
     }
     if (e.key === "ArrowLeft") {
@@ -1325,7 +1421,7 @@
     layerEl.addEventListener(
       "pointerdown",
       (e) => {
-        if (gameOver || activePointerId !== null) {
+        if (gameOver || waitingForStart || introRunning || activePointerId !== null) {
           return;
         }
         if (e.pointerType === "mouse" && e.button !== 0) {
@@ -1355,7 +1451,7 @@
       } catch {
         /* ignore */
       }
-      if (gameOver) {
+      if (gameOver || waitingForStart || introRunning) {
         return;
       }
       const dx = e.clientX - startX;
@@ -1364,7 +1460,14 @@
       const absX = Math.abs(dx);
       const absY = Math.abs(dy);
 
-      if (absX >= SWIPE_MIN_PX && absX > absY * 1.15) {
+      if (absY >= SWIPE_MIN_PX && absY > absX * 1.15 && dy > 0) {
+        const steps = Math.min(24, Math.max(1, Math.floor(absY / STEP_PX)));
+        for (let i = 0; i < steps; i++) {
+          if (!tryMoveDown()) {
+            break;
+          }
+        }
+      } else if (absX >= SWIPE_MIN_PX && absX > absY * 1.15) {
         const dir = dx > 0 ? 1 : -1;
         const steps = Math.min(8, Math.max(1, Math.floor(absX / STEP_PX)));
         for (let i = 0; i < steps; i++) {
@@ -1382,22 +1485,13 @@
 
   setupTouchGestures(touchGestureLayer);
 
-  const rotateBtn = document.getElementById("rotateBtn");
-  if (rotateBtn) {
-    rotateBtn.addEventListener("click", () => {
-      if (!gameOver) {
-        tryRotateClockwise();
-      }
-    });
-  }
-
   // ---------------------------------------------------------------------------
-  // 再開ボタン
+  // スタート：中央ボタン → メッセージ → ゲーム開始
   // ---------------------------------------------------------------------------
 
   if (restartBtn) {
     restartBtn.addEventListener("click", () => {
-      resetGame();
+      playIntroThenStart();
     });
   }
 
