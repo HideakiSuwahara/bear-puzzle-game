@@ -200,7 +200,8 @@
   /** 「ゲームスタート」表示中は二重押し防止 */
   let introRunning = false;
 
-  const INTRO_FLASH_MS = 900;
+  /** CSS の game-start-flash-pop（0.88s）と揃える */
+  const INTRO_FLASH_MS = 880;
 
   /**
    * 消去アニメ中に「驚き顔」を描くマス（board はまだ消してない）
@@ -411,7 +412,7 @@
    * 初期向きは縦（上に相棒）、ピボットは上から 2 段目。
    */
   function trySpawnNextPiece() {
-    if (gameOver) {
+    if (gameOver || waitingForStart || introRunning) {
       return;
     }
     const spawnRot = 0;
@@ -1489,11 +1490,20 @@
   // スタート：中央ボタン → メッセージ → ゲーム開始
   // ---------------------------------------------------------------------------
 
-  if (restartBtn) {
-    restartBtn.addEventListener("click", () => {
+  function bindStartButton(btn) {
+    if (!btn) {
+      return;
+    }
+    const onStart = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       playIntroThenStart();
-    });
+    };
+    btn.addEventListener("pointerdown", onStart, { passive: false });
+    btn.addEventListener("click", onStart);
   }
+
+  bindStartButton(restartBtn);
 
   // ---------------------------------------------------------------------------
   // 起動（canvas が無い環境ではゲームループを開始しない）

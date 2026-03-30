@@ -468,19 +468,20 @@ button:active {
 .play-start-overlay {
   position: absolute;
   inset: 0;
-  z-index: 15;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   gap: 14px;
-  padding: 16px;
-  border-radius: var(--radius-xl);
-  background: rgba(255, 248, 252, 0.82);
+  padding: 12px;
+  border-radius: clamp(12px, 3vw, 18px);
+  background: rgba(255, 248, 252, 0.85);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   box-sizing: border-box;
   pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .play-start-overlay--hidden {
@@ -543,10 +544,12 @@ button:active {
 
 .game-canvas-wrap {
   position: relative;
+  z-index: 0;
   width: 100%;
   max-width: min(100vw - 32px, 340px);
   margin: 0 auto;
   line-height: 0;
+  isolation: isolate;
 }
 
 /* 次の組の予告（キャンバス右上） */
