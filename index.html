@@ -78,34 +78,14 @@
     <div id="root-play" class="root-panel is-active" aria-label="プレイ">
       <section id="screen-play" class="screen screen-play is-active" aria-label="ゲーム">
         <div class="game-area">
-          <section class="game-info" aria-label="スコアと操作">
-            <div class="cute-stats">
-              <div class="stat-card stat-card--score">
-                <span class="stat-card__icon" aria-hidden="true">⭐</span>
-                <div class="stat-card__body">
-                  <span class="stat-card__label">スコア</span>
-                  <span class="stat-card__value" id="score">0</span>
-                </div>
-              </div>
-              <div class="stat-card stat-card--chain">
-                <span class="stat-card__icon" aria-hidden="true">💫</span>
-                <div class="stat-card__body">
-                  <span class="stat-card__label">直前の連鎖</span>
-                  <span class="stat-card__value" id="chain">0</span>
-                </div>
-              </div>
-              <div class="stat-card stat-card--maxchain">
-                <span class="stat-card__icon" aria-hidden="true">👑</span>
-                <div class="stat-card__body">
-                  <span class="stat-card__label">最高連鎖</span>
-                  <span class="stat-card__value" id="maxChain">0</span>
-                </div>
-              </div>
-            </div>
-            <p class="play-hint">
-              💕 ランキングにのせたいときは「アカウント」からログインしてからあそんでね<br />
-              <span class="play-hint-sub">くまは 2 匹つながって落ちてきます（色はランダム）。右上に<strong>次の組</strong>の予告が出ます。<strong>↑</strong> キーまたは「↻ 回転」で向きを変えられます。固定後、足場のない方は下まで落ちます。盤面の<strong>一番上のピンクの行</strong>がデッドラインです。<strong>1 分くらい経つと</strong>落下がどんどん速くなるよ。スマホは下のボタンでも操作できるよ</span>
-            </p>
+          <section class="game-info" aria-label="操作とヒント">
+            <details class="play-hint-details">
+              <summary class="play-hint-summary">遊び方・ヒント（タップで開く）</summary>
+              <p class="play-hint">
+                💕 ランキングにのせたいときは「アカウント」からログインしてからあそんでね<br />
+                <span class="play-hint-sub">くまは 2 匹つながって落ちてきます（色はランダム）。左上に<strong>スコア・連鎖</strong>、右上に<strong>次の組</strong>。<strong>↑</strong> キーまたは「↻ 回転」で向きを変えられます。固定後、足場のない方は下まで落ちます。盤面の<strong>薄ピンクの 2 行</strong>がデッドラインです。<strong>1 分くらい経つと</strong>落下が速くなるよ。スマホは下のボタンでも操作できるよ</span>
+              </p>
+            </details>
             <div class="play-actions">
               <button type="button" id="startBtn" class="btn-start-cute">♪ ゲームスタート ♪</button>
               <button type="button" id="rotateBtn" class="btn-rotate-cute" aria-label="くまの向きを時計回りに回転">↻ 回転</button>
@@ -115,6 +95,16 @@
             <section class="game-section game-section--framed">
               <div class="game-frame" aria-hidden="true"></div>
               <div class="game-canvas-wrap">
+                <div class="canvas-hud" aria-live="polite" aria-label="スコア表示">
+                  <div class="canvas-hud__line canvas-hud__line--score">
+                    <span class="canvas-hud__label">スコア</span>
+                    <span class="canvas-hud__value" id="score">0</span>
+                  </div>
+                  <div class="canvas-hud__line canvas-hud__line--chain">
+                    <span class="canvas-hud__mini">連鎖 <span id="chain">0</span></span>
+                    <span class="canvas-hud__mini">最高 <span id="maxChain">0</span></span>
+                  </div>
+                </div>
                 <div id="nextPiecePanel" class="next-piece-panel" aria-label="次に落ちてくる組">
                   <span class="next-piece-label">つぎ</span>
                   <canvas id="nextPreviewCanvas" width="56" height="84" class="next-preview-canvas" aria-hidden="true"></canvas>
@@ -123,21 +113,6 @@
                 <div id="chainFxLayer" class="chain-fx-layer" aria-hidden="true"></div>
               </div>
             </section>
-            <!-- スマホ：操作ボタン直上にスコア（PCでは非表示） -->
-            <div class="play-touch-strip" aria-live="polite">
-              <div class="play-touch-strip__block play-touch-strip__block--score">
-                <span class="play-touch-strip__label">スコア</span>
-                <span class="play-touch-strip__value" id="scoreTouchHud">0</span>
-              </div>
-              <div class="play-touch-strip__block play-touch-strip__block--chain">
-                <span class="play-touch-strip__label">連鎖</span>
-                <span class="play-touch-strip__value" id="chainTouchHud">0</span>
-              </div>
-              <div class="play-touch-strip__block play-touch-strip__block--max">
-                <span class="play-touch-strip__label">最高</span>
-                <span class="play-touch-strip__value" id="maxChainTouchHud">0</span>
-              </div>
-            </div>
             <!-- スマホ向け：キーボードの代わりにタッチ操作 -->
             <div
               class="touch-controls"

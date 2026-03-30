@@ -95,6 +95,14 @@ async function handleRegister() {
     }
     const userId = userIdEl.value.trim();
     const password = passEl.value;
+    if (userId.length < 3) {
+      showAuthMessage("ユーザーIDは 3 文字以上にしてください");
+      return;
+    }
+    if (password.length < 4) {
+      showAuthMessage("パスワードは 4 文字以上にしてください");
+      return;
+    }
     const result = await registerUser(userId, password);
     if (result && result.success) {
       showAuthMessage("登録成功！ログイン画面でサインインしてください");
@@ -128,13 +136,19 @@ async function handleLogin() {
     }
     const userId = userIdEl.value.trim();
     const password = passEl.value;
+    if (!userId || !password) {
+      showAuthMessage("ユーザーIDとパスワードを入力してください");
+      return;
+    }
     const result = await loginUser(userId, password);
-    if (result.success) {
-      saveCurrentUser(result.user);
+    if (result && result.success) {
+      saveCurrentUser(result.user || { userId });
       showAuthMessage("ログイン成功！プレイ画面へどうぞ");
       showScreen("play");
     } else {
-      showAuthMessage(result.message || "ログイン失敗");
+      showAuthMessage(
+        (result && result.message) || "ログイン失敗（応答を確認してください）"
+      );
     }
   } catch (err) {
     console.error(err);

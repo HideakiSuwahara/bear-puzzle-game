@@ -151,9 +151,6 @@
   const chainDisplay =
     document.getElementById("chain") || document.getElementById("chainDisplay");
   const maxChainDisplay = document.getElementById("maxChain");
-  const scoreTouchHud = document.getElementById("scoreTouchHud");
-  const chainTouchHud = document.getElementById("chainTouchHud");
-  const maxChainTouchHud = document.getElementById("maxChainTouchHud");
   const gameOverOverlay = document.getElementById("gameOverOverlay");
   // 再開ボタンが無いページでは「ゲームスタート」でリセット
   const restartBtn =
@@ -1106,7 +1103,8 @@
     ctx.strokeStyle = "rgba(255, 255, 255, 0.92)";
     ctx.fillStyle = "rgba(185, 30, 50, 0.98)";
     const label = "デッドライン";
-    const tx = canvas.width / 2;
+    /* 左上の小型 HUD と被りにくいよう、やや右寄せ */
+    const tx = Math.min(canvas.width * 0.56, canvas.width / 2 + CELL_W * 0.35);
     const ty = DEADLINE_ROW * CELL_H + 3;
     ctx.strokeText(label, tx, ty);
     ctx.fillText(label, tx, ty);
@@ -1180,9 +1178,6 @@
     if (scoreDisplay) scoreDisplay.textContent = s;
     if (chainDisplay) chainDisplay.textContent = c;
     if (maxChainDisplay) maxChainDisplay.textContent = m;
-    if (scoreTouchHud) scoreTouchHud.textContent = s;
-    if (chainTouchHud) chainTouchHud.textContent = c;
-    if (maxChainTouchHud) maxChainTouchHud.textContent = m;
   }
 
   function triggerGameOver() {
