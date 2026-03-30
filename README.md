@@ -26,13 +26,23 @@ npm start
 2. 「Add New」→「Project」→ GitHub 等にこのリポジトリを接続、または CLI で `vercel`  
 3. Framework は「Other」、出力ディレクトリはプロジェクトルート（ビルド不要）  
 
-### C. GitHub Pages
+### C. GitHub Pages（このフォルダからデプロイ）
 
-1. GitHub にリポジトリを作成してファイルを push  
-2. リポジトリの **Settings → Pages** で Source を **Deploy from a branch** にし、`main` の `/ (root)` を選択  
-3. 数分後に `https://<ユーザー名>.github.io/<リポジトリ名>/` が有効になります  
+1. [GitHub](https://github.com/new) で **New repository** を開き、名前（例: `bear-puzzle-game`）を付けて **Create repository**（README は追加しなくてよい）。  
+2. このフォルダで初回だけ Git の名前・メールを設定していない場合は、次のどちらかを実行する。  
+   - 全体設定: `git config --global user.name "表示名"` と `git config --global user.email "GitHubに登録したメール"`  
+   - このリポジトリだけ: 同じコマンドに `--global` を付けず、フォルダ内で実行  
+3. リモートを追加して push する（`<ユーザー名>` と `<リポジトリ名>` は自分のものに置き換え）。
 
-**注意:** リポジトリ名付きの URL（`/bear-puzzle-game/` など）で開く場合、CSS/JS の相対パスはそのままで動きます。サブパス以外の設定は不要です。
+   ```bash
+   git remote add origin https://github.com/<ユーザー名>/<リポジトリ名>.git
+   git push -u origin main
+   ```
+
+4. GitHub のリポジトリで **Settings → Pages** を開き、**Build and deployment** の Source を **Deploy from a branch** にし、Branch は **`main`**、フォルダは **`/ (root)`** を選んで Save。  
+5. 1〜3 分後に **`https://<ユーザー名>.github.io/<リポジトリ名>/`** で公開される（初回は GitHub から表示される URL を確認）。
+
+**注意:** プロジェクトサイト（`/リポジトリ名/` 付き）でも、このプロジェクトは相対パスの CSS/JS なので追加設定は不要です。
 
 ### D. Cloudflare Pages
 
