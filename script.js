@@ -151,6 +151,9 @@
   const chainDisplay =
     document.getElementById("chain") || document.getElementById("chainDisplay");
   const maxChainDisplay = document.getElementById("maxChain");
+  const scoreTouchHud = document.getElementById("scoreTouchHud");
+  const chainTouchHud = document.getElementById("chainTouchHud");
+  const maxChainTouchHud = document.getElementById("maxChainTouchHud");
   const gameOverOverlay = document.getElementById("gameOverOverlay");
   // 再開ボタンが無いページでは「ゲームスタート」でリセット
   const restartBtn =
@@ -1171,9 +1174,15 @@
   // ---------------------------------------------------------------------------
 
   function updateHud() {
-    if (scoreDisplay) scoreDisplay.textContent = String(score);
-    if (chainDisplay) chainDisplay.textContent = String(lastChainCount);
-    if (maxChainDisplay) maxChainDisplay.textContent = String(maxChainRecord);
+    const s = String(score);
+    const c = String(lastChainCount);
+    const m = String(maxChainRecord);
+    if (scoreDisplay) scoreDisplay.textContent = s;
+    if (chainDisplay) chainDisplay.textContent = c;
+    if (maxChainDisplay) maxChainDisplay.textContent = m;
+    if (scoreTouchHud) scoreTouchHud.textContent = s;
+    if (chainTouchHud) chainTouchHud.textContent = c;
+    if (maxChainTouchHud) maxChainTouchHud.textContent = m;
   }
 
   function triggerGameOver() {

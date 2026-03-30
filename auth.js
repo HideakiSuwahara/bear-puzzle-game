@@ -44,16 +44,36 @@ function showAuthMessage(message) {
   if (el) el.textContent = message;
 }
 
+/** メインタブ ID（account / info / play） */
+const SCREEN_TO_ROOT = {
+  register: "account",
+  login: "account",
+  ranking: "info",
+  play: "play",
+};
+
+function showRoot(rootId) {
+  document.querySelectorAll(".root-panel").forEach((el) => {
+    el.classList.toggle("is-active", el.id === "root-" + rootId);
+  });
+  document.querySelectorAll(".root-tab").forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.root === rootId);
+  });
+}
+
 /**
  * メニューで画面を切り替える
  * @param {"register"|"login"|"play"|"ranking"} screenId
  */
 function showScreen(screenId) {
   currentScreenId = screenId;
+  const rootId = SCREEN_TO_ROOT[screenId] || "play";
+  showRoot(rootId);
+
   document.querySelectorAll(".screen").forEach((el) => {
     el.classList.toggle("is-active", el.id === "screen-" + screenId);
   });
-  document.querySelectorAll(".nav-btn").forEach((btn) => {
+  document.querySelectorAll(".sub-nav-btn").forEach((btn) => {
     btn.classList.toggle("is-active", btn.dataset.screen === screenId);
   });
   if (screenId === "ranking") {
@@ -200,7 +220,26 @@ async function submitScoreAfterGameOver(finalScore) {
 window.submitScoreAfterGameOver = submitScoreAfterGameOver;
 
 function setupAuthEvents() {
-  document.querySelectorAll(".nav-btn").forEach((btn) => {
+  document.querySelectorAll(".root-tab").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      showAuthMessage("");
+      const root = btn.dataset.root;
+      if (!root) return;
+      if (root === "account") {
+        if (currentScreenId === "register" || currentScreenId === "login") {
+          showScreen(currentScreenId);
+        } else {
+          showScreen("login");
+        }
+      } else if (root === "info") {
+        showScreen("ranking");
+      } else if (root === "play") {
+        showScreen("play");
+      }
+    });
+  });
+
+  document.querySelectorAll(".sub-nav-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       showAuthMessage("");
       const id = btn.dataset.screen;

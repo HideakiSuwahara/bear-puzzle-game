@@ -97,8 +97,56 @@ h2 {
   font-weight: 700;
 }
 
-/* メニュー */
-.app-nav {
+/* メインタブ（アカウント / 情報 / プレイ） */
+.app-root-nav {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.root-tab {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 200px;
+  padding: 10px 12px;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff 0%, var(--lavender) 100%);
+  color: #6b5a8c;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+}
+
+.root-tab:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.03);
+  box-shadow: 0 6px 18px rgba(180, 150, 220, 0.35);
+}
+
+.root-tab.is-active {
+  background: linear-gradient(180deg, #ffb8d9 0%, var(--pink-main) 100%);
+  color: #fff;
+  border-color: #fff8fc;
+  box-shadow: var(--shadow-pink);
+}
+
+/* ルートごとのパネル */
+.root-panel {
+  display: none;
+  margin-bottom: clamp(12px, 3vw, 20px);
+}
+
+.root-panel.is-active {
+  display: block;
+}
+
+/* アカウント内サブタブ（ログイン / 新規登録） */
+.sub-nav {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -106,30 +154,29 @@ h2 {
   margin-bottom: 14px;
 }
 
-.nav-btn {
-  padding: 10px 20px;
+.sub-nav-btn {
+  padding: 10px 22px;
   border: 3px solid #fff;
   border-radius: 999px;
-  background: linear-gradient(180deg, #fff 0%, var(--lavender) 100%);
-  color: #6b5a8c;
-  font-size: 0.92rem;
+  background: linear-gradient(180deg, #fffef8 0%, #ffe8f0 100%);
+  color: #8b5a7a;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   box-shadow: var(--shadow-soft);
-  transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+  transition: transform 0.12s, box-shadow 0.2s, filter 0.2s;
 }
 
-.nav-btn:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.03);
-  box-shadow: 0 6px 18px rgba(180, 150, 220, 0.35);
+.sub-nav-btn:hover {
+  filter: brightness(1.04);
+  transform: translateY(-1px);
 }
 
-.nav-btn.is-active {
-  background: linear-gradient(180deg, #ffb8d9 0%, var(--pink-main) 100%);
-  color: #fff;
-  border-color: #fff8fc;
-  box-shadow: var(--shadow-pink);
+.sub-nav-btn.is-active {
+  background: linear-gradient(180deg, #c8f5e8 0%, #7dd3b8 100%);
+  color: #1f5c45;
+  border-color: #fff;
+  box-shadow: 0 4px 14px rgba(100, 200, 160, 0.35);
 }
 
 .auth-message {
@@ -389,6 +436,71 @@ button:active {
   margin-top: 0;
   flex: 1 1 200px;
   max-width: 280px;
+}
+
+/* スマホ：キャンバス下・タッチボタン直上のスコア帯（PCでは非表示） */
+.play-touch-strip {
+  display: none;
+  width: 100%;
+  max-width: min(calc(100vw - 24px), 360px);
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+  gap: 8px;
+  justify-content: center;
+  align-items: stretch;
+  padding: 10px 8px;
+  margin-top: 4px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, #ffe8f3 100%);
+  border: 3px solid #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.play-touch-strip__block {
+  flex: 1 1 0;
+  min-width: 0;
+  text-align: center;
+  padding: 8px 6px;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+}
+
+.play-touch-strip__block--score {
+  background: linear-gradient(135deg, #fff6fb 0%, #ffd6ea 100%);
+}
+
+.play-touch-strip__block--chain {
+  background: linear-gradient(135deg, #f6fffd 0%, #c8f5e8 100%);
+}
+
+.play-touch-strip__block--max {
+  background: linear-gradient(135deg, #fffef8 0%, #ffe8a8 100%);
+}
+
+.play-touch-strip__label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-soft);
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+
+.play-touch-strip__value {
+  font-size: clamp(1.2rem, 5.5vw, 1.55rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--pink-deep);
+  line-height: 1.1;
+  text-shadow: 1px 1px 0 #fff;
+}
+
+.play-touch-strip__block--chain .play-touch-strip__value {
+  color: #2a9d7a;
+}
+
+.play-touch-strip__block--max .play-touch-strip__value {
+  color: #b8860b;
 }
 
 .btn-rotate-cute {
@@ -738,6 +850,14 @@ button:active {
     display: flex;
   }
 
+  .play-touch-strip {
+    display: flex;
+  }
+
+  .game-info .cute-stats {
+    display: none;
+  }
+
   .game-section--framed {
     width: 100%;
     max-width: 100%;
@@ -758,6 +878,34 @@ button:active {
   .next-piece-label {
     font-size: 0.55rem;
   }
+
+  .app {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .app-root-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    margin-bottom: 0;
+    padding: 8px 12px max(10px, env(safe-area-inset-bottom, 0px));
+    gap: 6px;
+    justify-content: stretch;
+    background: rgba(255, 250, 252, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 3px solid rgba(255, 255, 255, 0.95);
+    box-shadow: 0 -6px 24px rgba(255, 140, 180, 0.18);
+  }
+
+  .root-tab {
+    max-width: none;
+    min-height: 48px;
+    font-size: 0.82rem;
+    padding-inline: 8px;
+  }
 }
 
 /* タッチデバイス（マウスが主でない）でもボタンを出す */
@@ -768,13 +916,9 @@ button:active {
 }
 
 @media (max-width: 600px) {
-  .app-nav {
-    flex-direction: column;
-  }
-
-  .nav-btn {
-    width: 100%;
-    min-height: 44px;
+  .root-tab {
+    font-size: 0.78rem;
+    padding-inline: 6px;
   }
 
   .auth-row {
